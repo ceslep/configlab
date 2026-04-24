@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/cesle/.claude/**)",
+      "Read(//c/Users/cesle/.claude//**)",
+      "Bash(awk '{print $9, $5}')",
+      "Bash(mkdir -p \"/c/Users/cesle/OneDrive/Escritorio/configlab/.claude/skills\")",
+      "Bash(cp -r /c/Users/cesle/inasistig/.claude/skills/ui-ux-pro-max \"/c/Users/cesle/OneDrive/Escritorio/configlab/.claude/skills/\")",
+      "Bash(find \"/c/Users/cesle/OneDrive/Escritorio/configlab/.claude/skills\" -type d -name \"__pycache__\" -exec rm -rf {} +)",
+      "Bash(C:/Python311/python.exe scripts/search.py \"svelte dashboard education\" --domain style -n 3)",
+      "Bash(npm install *)",
+      "WebSearch",
+      "Bash(where mysql *)",
+      "Bash(where ftp *)",
+      "Bash(where curl *)",
+      "Bash(pip show *)",
+      "Bash(C:/Python311/python.exe -c \"import mysql.connector; print\\('OK'\\)\")",
+      "Bash(C:/Python311/python.exe -c \"import pymysql; print\\('OK'\\)\")",
+      "Bash(curl -s --max-time 10 \"ftp://iedeocci:Qpzm894035*@162.241.203.120/home1/iedeocci/mycar.iedeoccidente.com/\")",
+      "Bash(C:/Python311/python.exe *)",
+      "Bash(curl -s --max-time 15 --ftp-pasv \"ftp://iedeocci:Qpzm894035*@162.241.203.120/\")",
+      "Bash(curl -s --max-time 15 --ftp-pasv \"ftp://iedeocci:Qpzm894035*@162.241.203.120/home1/iedeocci/mycar.iedeoccidente.com/\")",
+      "Bash(curl -s --max-time 15 --ftp-pasv -l \"ftp://iedeocci:Qpzm894035*@162.241.203.120/mycar.iedeoccidente.com/\")",
+      "Bash(curl *)",
+      "mcp__plugin_svelte_svelte__svelte-autofixer",
+      "Bash(npm run *)",
+      "Bash(npx svelte-check *)",
+      "Bash(grep \"\\\\.svelte$\")"
+    ]
+  }
+}
