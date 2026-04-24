@@ -12,6 +12,42 @@
   import { getFirmas, guardarFirmas, getFirmaImageUrl } from '../service';
   import SignatureCanvas from './SignatureCanvas.svelte';
 
+  function periodosSeSuperponen(
+    p1: { desde: string; hasta: string | null },
+    p2: { desde: string; hasta: string | null }
+  ): boolean {
+    const inicio1 = p1.desde ? new Date(p1.desde).getTime() : 0;
+    const fin1 = p1.hasta ? new Date(p1.hasta).getTime() : Number.MAX_SAFE_INTEGER;
+    const inicio2 = p2.desde ? new Date(p2.desde).getTime() : 0;
+    const fin2 = p2.hasta ? new Date(p2.hasta).getTime() : Number.MAX_SAFE_INTEGER;
+    return inicio1 <= fin2 && fin1 >= inicio2;
+  }
+
+  function validarPeriodos(firmasList: Firma[]): string {
+    for (let i = 0; i < firmasList.length; i++) {
+      const firma = firmasList[i];
+      if (!firma.periodos || firma.periodos.length === 0) continue;
+
+      for (let j = i + 1; j < firmasList.length; j++) {
+        const otra = firmasList[j];
+        if (!otra.periodos || otra.periodos.length === 0) continue;
+
+        for (const p1 of firma.periodos) {
+          if (!p1.desde) continue;
+          for (const p2 of otra.periodos) {
+            if (!p2.desde) continue;
+            if (periodosSeSuperponen(p1, p2)) {
+              const nombre1 = firma.nombre.split(':')[0] || `Firma ${i + 1}`;
+              const nombre2 = otra.nombre.split(':')[0] || `Firma ${j + 1}`;
+              return `Conflicto de fechas: "${nombre1}" y "${nombre2}" tienen períodos superpuestos`;
+            }
+          }
+        }
+      }
+    }
+    return '';
+  }
+
   let firmas = $state<Firma[]>([]);
   let loading = $state(true);
   let saving = $state(false);
@@ -116,6 +152,12 @@
     errorMsg = '';
     successMsg = '';
     try {
+      const conflicto = validarPeriodos(firmas);
+      if (conflicto) {
+        errorMsg = conflicto;
+        saving = false;
+        return;
+      }
       const res = await guardarFirmas(firmas);
       if (res.msg) {
         successMsg = 'Firmas guardadas correctamente';

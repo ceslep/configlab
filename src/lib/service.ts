@@ -6,9 +6,41 @@ async function request<T>(endpoint: string, body?: unknown): Promise<T> {
     headers: body ? { 'Content-Type': 'application/json' } : undefined,
     body: body ? JSON.stringify(body) : undefined,
   };
-  const res = await fetch(`${BASE_URL}/${endpoint}`, opts);
-  if (!res.ok) throw new Error(`Error ${res.status}: ${res.statusText}`);
-  return res.json();
+  try {
+    const res = await fetch(`${BASE_URL}/${endpoint}`, opts);
+    if (!res.ok) throw new Error(`Error ${res.status}: ${res.statusText}`);
+    return res.json();
+  } catch (e) {
+    throw new Error('No se puede conectar al servidor');
+  }
+}
+
+export interface Usuario {
+  id: string;
+  nombre: string;
+  email: string;
+}
+
+export interface LoginResponse {
+  success: boolean;
+  usuario?: Usuario;
+  mensaje?: string;
+}
+
+export async function login(id: string): Promise<LoginResponse> {
+  return request('login_configlab.php', { id });
+}
+
+export async function loginGoogle(googleToken: string): Promise<LoginResponse> {
+  return request('login_configlab.php', { googleToken });
+}
+
+export async function checkAuth(): Promise<LoginResponse> {
+  return request('login_configlab.php');
+}
+
+export async function logout(): Promise<{ success: boolean }> {
+  return request('login_configlab.php?logout=1');
 }
 
 export function getProcedimientos(): Promise<Procedimiento[]> {
