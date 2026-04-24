@@ -97,8 +97,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 </svelte:head>
 
-<Modal bind:open {title} size="lg" autoclose={false}>
-  <div class="glass-modal">
+<Modal bind:open {title} size="md" autoclose={false} class="max-h-[90vh] overflow-y-auto">
+  <div class="glass-modal px-2 py-4 sm:px-4">
     <!-- Error Alert -->
     {#if errorMsg}
       <div class="mb-6 flex items-center gap-3 rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400 backdrop-blur">
@@ -278,16 +278,16 @@
             <label for="color" class="mb-1.5 block text-sm font-medium text-gray-400 transition-colors group-focus-within:text-cyan-400">
               Color
             </label>
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 sm:gap-3">
               <div class="relative flex-1">
                 <input
                   type="color"
                   id="color"
                   bind:value={colorHex}
-                  class="h-12 w-full cursor-pointer rounded-xl border border-white/20 bg-white/5 p-1 transition-all duration-300 hover:border-white/30"
+                  class="h-10 w-full cursor-pointer rounded-xl border border-white/20 bg-white/5 p-1 transition-all duration-300 hover:border-white/30 sm:h-12"
                 />
               </div>
-              <span class="rounded-lg bg-white/10 px-3 py-2 text-sm font-mono text-gray-300">
+              <span class="hidden rounded-lg bg-white/10 px-2 py-2 text-xs font-mono text-gray-300 sm:inline sm:px-3 sm:text-sm">
                 {hexToRgb(colorHex)}
               </span>
             </div>
@@ -309,20 +309,20 @@
       </div>
 
       <!-- Botones -->
-      <div class="flex justify-end gap-3 pt-4">
+      <div class="sticky bottom-0 flex flex-col gap-3 bg-gray-900 pt-4 sm:relative sm:flex-row sm:justify-end sm:bg-transparent">
         <button
           type="button"
           onclick={() => (open = false)}
-          class="rounded-xl border border-white/20 bg-white/5 px-6 py-3 text-sm font-medium text-gray-300 backdrop-blur transition-all duration-300 hover:bg-white/10 hover:border-white/30 focus:outline-none focus:ring-2 focus:ring-white/20"
+          class="w-full rounded-xl border border-white/20 bg-white/5 px-6 py-3 text-sm font-medium text-gray-300 backdrop-blur transition-all duration-300 hover:bg-white/10 hover:border-white/30 focus:outline-none focus:ring-2 focus:ring-white/20 sm:w-auto"
         >
           Cancelar
         </button>
         <button
           type="submit"
           disabled={saving}
-          class="group relative overflow-hidden rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 px-6 py-3 text-sm font-semibold text-gray-900 shadow-lg shadow-amber-500/25 transition-all duration-300 hover:from-amber-400 hover:to-yellow-400 hover:shadow-amber-500/40 focus:outline-none focus:ring-2 focus:ring-amber-500/50 disabled:cursor-not-allowed disabled:opacity-70"
+          class="group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 px-6 py-3 text-sm font-semibold text-gray-900 shadow-lg shadow-amber-500/25 transition-all duration-300 hover:from-amber-400 hover:to-yellow-400 hover:shadow-amber-500/40 focus:outline-none focus:ring-2 focus:ring-amber-500/50 disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
         >
-          <span class="flex items-center gap-2">
+          <span class="flex items-center justify-center gap-2">
             {#if saving}
               <svg class="size-4 animate-spin" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

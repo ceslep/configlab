@@ -97,53 +97,63 @@
           ConfigLab MyCar
         </span>
       </NavBrand>
-      <div class="flex items-center gap-3">
-        <div class="flex items-center gap-2 rounded-lg bg-white/50 px-3 py-1.5 dark:bg-white/10">
+      <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 rounded-lg bg-white/50 px-2 py-1.5 dark:bg-white/10 lg:px-3">
           {#if usuario?.foto}
             <img
               src={usuario.foto}
               alt="Foto de perfil"
-              class="size-8 rounded-full border-2 border-white dark:border-gray-700"
+              class="size-7 rounded-full border-2 border-white dark:border-gray-700 sm:size-8"
             />
           {:else if usuario?.nombre}
-            <div class="flex size-8 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 text-xs font-bold text-white">
+            <div class="flex size-7 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 text-xs font-bold text-white sm:size-8">
               {usuario.nombre.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
             </div>
           {/if}
-          <div class="flex flex-col">
+          <div class="hidden flex-col sm:flex">
             <span class="text-sm font-medium text-gray-900 dark:text-white line-clamp-1">
               {usuario?.nombre || usuario?.email || ''}
             </span>
-            <span class="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">
+            <span class="hidden text-xs text-gray-500 dark:text-gray-400 line-clamp-1 lg:block">
               {usuario?.email || ''}
             </span>
           </div>
         </div>
-        <Button
-          size="sm"
-          color={activeView === 'procedimientos' ? 'blue' : 'alternative'}
-          onclick={() => (activeView = 'procedimientos')}
-        >
-          <FlaskOutline class="mr-1 h-4 w-4" /> Procedimientos
-        </Button>
-        <Button
-          size="sm"
-          color={activeView === 'firmas' ? 'blue' : 'alternative'}
-          onclick={() => handleViewChange('firmas')}
-        >
-          <EditOutline class="mr-1 h-4 w-4" />
-          Firmas
-          {#if activeView !== 'firmas' && showFirmasHint}
-            <span class="relative flex h-2 w-2 ml-1">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-              <span class="relative inline-flex h-2 w-2 rounded-full bg-cyan-500"></span>
-            </span>
-          {/if}
-        </Button>
-        <Button size="sm" color="red" outline onclick={handleLogout} title="Cerrar sesión">
-          Salir
-        </Button>
-        <DarkMode />
+        <div class="flex items-center gap-1 sm:gap-2">
+          <Button
+            size="sm"
+            color={activeView === 'procedimientos' ? 'blue' : 'alternative'}
+            onclick={() => (activeView = 'procedimientos')}
+            class="px-2 sm:px-3"
+          >
+            <FlaskOutline class="h-4 w-4" />
+            <span class="ml-1 hidden sm:inline">Procedimientos</span>
+          </Button>
+          <Button
+            size="sm"
+            color={activeView === 'firmas' ? 'blue' : 'alternative'}
+            onclick={() => handleViewChange('firmas')}
+            class="px-2 sm:px-3"
+          >
+            <EditOutline class="h-4 w-4" />
+            <span class="ml-1 hidden sm:inline">Firmas</span>
+            {#if activeView !== 'firmas' && showFirmasHint}
+              <span class="relative ml-1 flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                <span class="relative inline-flex h-2 w-2 rounded-full bg-cyan-500"></span>
+              </span>
+            {/if}
+          </Button>
+          <Button size="sm" color="red" outline onclick={handleLogout} title="Cerrar sesión" class="px-2 sm:px-3">
+            <span class="hidden sm:inline">Salir</span>
+            <svg class="h-4 w-4 sm:ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+          </Button>
+          <div class="ml-1 hidden sm:block">
+            <DarkMode />
+          </div>
+        </div>
       </div>
     </Navbar>
 

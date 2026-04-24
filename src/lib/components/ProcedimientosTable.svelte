@@ -260,8 +260,79 @@
       </button>
     </div>
   {:else}
-    <!-- Table -->
-    <div class="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden dark:border-white/10 dark:bg-gray-900/50">
+    <!-- Mobile Cards View -->
+    <div class="mb-4 grid grid-cols-1 gap-3 sm:hidden">
+      {#each paginated as p, i (p.ind)}
+        <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-gray-900/50 {i % 2 === 0 ? '' : 'bg-gray-50/50 dark:bg-white/[2%]'}">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0 flex-1">
+              <h3 class="truncate text-base font-semibold text-gray-900 dark:text-white" title={p.nombre}>
+                {p.nombre}
+              </h3>
+              {#if p.abreviatura && p.abreviatura !== p.nombre}
+                <p class="text-xs text-gray-500 dark:text-gray-500">{p.abreviatura}</p>
+              {/if}
+              <div class="mt-2 flex flex-wrap gap-2">
+                <span class="inline-flex items-center rounded-lg bg-cyan-100 px-2 py-1 text-xs text-cyan-700 dark:bg-cyan-500/20 dark:text-cyan-400">
+                  {TABLAS_LABELS[p.tabla] ?? p.tabla}
+                </span>
+                <span class="inline-flex items-center rounded-lg bg-gray-100 px-2 py-1 text-xs text-gray-600 dark:bg-gray-500/20 dark:text-gray-300">
+                  {TIPOS_LABELS[p.tipo] ?? p.tipo ?? '—'}
+                </span>
+              </div>
+            </div>
+            {#if p.color}
+              <span
+                class="size-8 shrink-0 rounded-lg border border-gray-200 dark:border-white/20"
+                style="background-color: {rgbStyle(p.color)}"
+              ></span>
+            {/if}
+          </div>
+          
+          <div class="mt-3 grid grid-cols-2 gap-2 text-xs">
+            <div>
+              <span class="text-gray-500 dark:text-gray-400">Código:</span>
+              <span class="ml-1 font-mono text-gray-700 dark:text-gray-300">{p.codigo}</span>
+            </div>
+            <div>
+              <span class="text-gray-500 dark:text-gray-400">CUPS:</span>
+              <span class="ml-1 font-mono text-gray-700 dark:text-gray-300">{p.tipoprocedimiento || '—'}</span>
+            </div>
+            <div>
+              <span class="text-gray-500 dark:text-gray-400">Unidades:</span>
+              <span class="ml-1 text-gray-700 dark:text-gray-300">{p.unidades || '—'}</span>
+            </div>
+          </div>
+          
+          <div class="mt-3 flex gap-2">
+            <button
+              onclick={() => openEdit(p)}
+              class="flex flex-1 items-center justify-center gap-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-gray-600 shadow-sm transition-all duration-300 hover:bg-gray-50 hover:border-gray-300 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10"
+            >
+              <EditOutline class="size-3.5" />
+              Editar
+            </button>
+            <button
+              onclick={() => openDelete(p)}
+              class="flex flex-1 items-center justify-center gap-1 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-500 transition-all duration-300 hover:bg-red-100 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20"
+            >
+              <TrashBinOutline class="size-3.5" />
+              Eliminar
+            </button>
+          </div>
+        </div>
+      {:else}
+        <div class="col-span-full rounded-xl border border-gray-200 bg-white p-8 text-center dark:border-white/10 dark:bg-gray-900/50">
+          <div class="flex flex-col items-center gap-2 text-gray-400">
+            <FlaskOutline class="size-8 opacity-50" />
+            <p>No se encontraron procedimientos</p>
+          </div>
+        </div>
+      {/each}
+    </div>
+
+    <!-- Desktop Table View -->
+    <div class="hidden rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden dark:border-white/10 dark:bg-gray-900/50 sm:block">
       <!-- Table Header -->
       <div class="overflow-x-auto">
         <table class="w-full">

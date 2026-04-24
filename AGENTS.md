@@ -13,7 +13,7 @@ npm run deploy # Build + deploy to GitHub Pages via gh-pages
 
 - **Entry**: `src/main.ts` -> `src/App.svelte`
 - **Components**: `src/lib/components/*.svelte`
-- **Build base**: `/configlabmycar/` (configured in `vite.config.ts`)
+- **Build base**: `/configlab/` (configured in `vite.config.ts`)
 
 ## Architecture
 

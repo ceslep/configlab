@@ -22,3 +22,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# PHP files (local backend)
+*.php
+!printphp/*.php

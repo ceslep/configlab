@@ -247,9 +247,9 @@
   {/if}
 
   <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-    <h2 class="flex items-center gap-2 text-2xl font-bold text-gray-900 dark:text-white">
-      <EditOutline class="h-7 w-7 text-blue-600 dark:text-blue-400" />
-      Gestión de Firmas
+    <h2 class="flex items-center gap-2 text-xl font-bold text-gray-900 dark:text-white sm:text-2xl">
+      <EditOutline class="h-6 w-6 text-blue-600 dark:text-blue-400" />
+      Firmas
       {#if !loading}
         <Badge color="blue">{firmas.length}</Badge>
       {/if}
@@ -286,8 +286,8 @@
       {#each firmas as firma, i (i)}
         <Card class="relative">
           <div class="space-y-3">
-            <div class="flex items-center justify-between">
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h3 class="text-base font-semibold text-gray-900 dark:text-white sm:text-lg">
                 Firma #{i + 1}
                 {#if firma.nombre}
                   <span class="text-sm font-normal text-gray-500">— {firma.nombre.split(':')[0]}</span>
@@ -314,14 +314,14 @@
                 <img
                   src={getPreviewSrc(firma)}
                   alt="Firma de {firma.nombre || 'sin nombre'}"
-                  class="mx-auto max-h-32 object-contain"
+                  class="mx-auto max-h-24 object-contain sm:max-h-32"
                 />
                 {#if firma.archivo}
                   <p class="mt-1 text-center text-xs text-gray-400">{firma.archivo}</p>
                 {/if}
               </div>
             {:else}
-              <div class="flex h-24 items-center justify-center rounded-lg border-2 border-dashed border-gray-300 text-sm text-gray-400 dark:border-gray-600">
+              <div class="flex h-20 items-center justify-center rounded-lg border-2 border-dashed border-gray-300 text-sm text-gray-400 dark:border-gray-600 sm:h-24">
                 Sin firma
               </div>
             {/if}
@@ -359,10 +359,14 @@
                   <Label class="mb-1">Periodos de vigencia</Label>
                   <div class="space-y-2">
                     {#each firma.periodos as per, pi}
-                      <div class="flex items-center gap-2">
-                        <Input type="date" bind:value={per.desde} />
+                      <div class="flex flex-wrap items-center gap-2">
+                        <div class="min-w-[120px] flex-1">
+                          <Input type="date" bind:value={per.desde} class="!py-2 !text-sm" />
+                        </div>
                         <span class="text-gray-400">→</span>
-                        <Input type="date" value={per.hasta ?? ''} onchange={(e: Event) => { per.hasta = (e.target as HTMLInputElement).value || null; }} />
+                        <div class="min-w-[120px] flex-1">
+                          <Input type="date" value={per.hasta ?? ''} onchange={(e: Event) => { per.hasta = (e.target as HTMLInputElement).value || null; }} class="!py-2 !text-sm" />
+                        </div>
                         <Button size="xs" color="red" outline onclick={() => removePeriodo(i, pi)}>
                           <TrashBinOutline class="h-3 w-3" />
                         </Button>
@@ -376,7 +380,7 @@
 
                 <div>
                   <Label class="mb-1">Imagen de firma</Label>
-                  <div class="mb-2 flex gap-2">
+                  <div class="mb-2 flex flex-wrap gap-2">
                     <Button
                       size="xs"
                       color={getMode(i) === 'file' ? 'blue' : 'alternative'}
@@ -411,8 +415,8 @@
                     <SignatureCanvas
                       value={firma.imagen_firma}
                       onchange={(v: string) => handleCanvasChange(i, v)}
-                      width={400}
-                      height={180}
+                      width={350}
+                      height={150}
                     />
                   {/if}
                 </div>
@@ -431,10 +435,11 @@
 
 <!-- Botón guardar flotante -->
 {#if !loading && firmas.length > 0}
-  <div class="fixed bottom-6 right-6 z-40">
-    <Button color="green" size="lg" onclick={save} disabled={saving}>
-      <FloppyDiskOutline class="mr-2 h-5 w-5" />
-      {saving ? 'Guardando...' : 'Guardar todo'}
+  <div class="fixed bottom-4 right-4 z-40 sm:bottom-6 sm:right-6">
+    <Button color="green" size="md" onclick={save} disabled={saving} class="shadow-lg">
+      <FloppyDiskOutline class="h-4 w-4 sm:mr-2" />
+      <span class="hidden sm:inline">{saving ? 'Guardando...' : 'Guardar todo'}</span>
+      <span class="sm:hidden">{saving ? '...' : 'Guardar'}</span>
     </Button>
   </div>
 {/if}
