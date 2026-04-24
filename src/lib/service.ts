@@ -19,6 +19,7 @@ export interface Usuario {
   id: string;
   nombre: string;
   email: string;
+  foto?: string;
 }
 
 export interface LoginResponse {

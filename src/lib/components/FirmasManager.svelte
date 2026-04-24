@@ -5,12 +5,34 @@
   import {
     PlusOutline, TrashBinOutline, FloppyDiskOutline,
     RefreshOutline, ExclamationCircleOutline, EditOutline,
-    ArrowUpOutline, ArrowDownOutline,
+    ArrowUpOutline, ArrowDownOutline, InfoCircleOutline,
   } from 'flowbite-svelte-icons';
 
   import type { Firma } from '../constants';
   import { getFirmas, guardarFirmas, getFirmaImageUrl } from '../service';
   import SignatureCanvas from './SignatureCanvas.svelte';
+
+  const POPOVER_KEY = 'firmas_popover_v1';
+  const POPOVER_EXPIRE_DATE = new Date('2026-05-04');
+
+  let showPopover = $state(false);
+
+  function shouldShowPopover(): boolean {
+    const now = new Date();
+    if (now > POPOVER_EXPIRE_DATE) return false;
+    const closed = localStorage.getItem(POPOVER_KEY);
+    if (closed === 'true') return false;
+    return true;
+  }
+
+  function closePopover() {
+    localStorage.setItem(POPOVER_KEY, 'true');
+    showPopover = false;
+  }
+
+  $effect(() => {
+    showPopover = shouldShowPopover();
+  });
 
   function periodosSeSuperponen(
     p1: { desde: string; hasta: string | null },
@@ -198,6 +220,32 @@
 </script>
 
 <div class="space-y-4">
+  <!-- Popover Informativo -->
+  {#if showPopover}
+    <div class="relative overflow-hidden rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-4 backdrop-blur dark:border-cyan-500/30 dark:bg-cyan-500/10">
+      <div class="absolute top-0 right-0 -mt-1 -mr-1 flex size-8 items-center justify-center rounded-full bg-cyan-500/20">
+        <InfoCircleOutline class="size-4 text-cyan-600 dark:text-cyan-400" />
+      </div>
+      <div class="pr-8">
+        <h4 class="mb-1 text-sm font-semibold text-cyan-700 dark:text-cyan-400">
+          Gestión de Firmas
+        </h4>
+        <p class="text-sm text-cyan-600 dark:text-cyan-300">
+          Las firmas se usan para generar informes PDF.Configure el nombre completo,cargo,T.P.y períodos de vigencia para cada firma.Puede agregar múltiples firmas y ordenarlas según sea necesario.
+        </p>
+      </div>
+      <button
+        onclick={closePopover}
+        aria-label="Cerrar"
+        class="absolute top-2 right-2 flex size-6 items-center justify-center rounded-full text-cyan-500 transition-colors hover:bg-cyan-500/20 hover:text-cyan-700 dark:hover:text-cyan-300"
+      >
+        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  {/if}
+
   <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
     <h2 class="flex items-center gap-2 text-2xl font-bold text-gray-900 dark:text-white">
       <EditOutline class="h-7 w-7 text-blue-600 dark:text-blue-400" />
@@ -212,10 +260,6 @@
       </Button>
       <Button color="blue" onclick={addFirma}>
         <PlusOutline class="mr-1 h-4 w-4" /> Agregar firma
-      </Button>
-      <Button color="green" onclick={save} disabled={saving || loading}>
-        <FloppyDiskOutline class="mr-1 h-4 w-4" />
-        {saving ? 'Guardando...' : 'Guardar todo'}
       </Button>
     </div>
   </div>
@@ -384,3 +428,13 @@
     </div>
   {/if}
 </div>
+
+<!-- Botón guardar flotante -->
+{#if !loading && firmas.length > 0}
+  <div class="fixed bottom-6 right-6 z-40">
+    <Button color="green" size="lg" onclick={save} disabled={saving}>
+      <FloppyDiskOutline class="mr-2 h-5 w-5" />
+      {saving ? 'Guardando...' : 'Guardar todo'}
+    </Button>
+  </div>
+{/if}

@@ -82,24 +82,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 $datos = json_decode(file_get_contents('php://input'), true);
 
 if (isset($datos['googleToken']) && $datos['googleToken'] !== '') {
-    // Login con Google
+    // Login con Google - validar JWT
     $googleToken = $datos['googleToken'];
-    $verifyUrl = 'https://oauth2.googleapis.com/tokeninfo?id_token=' . urlencode($googleToken);
-    $context = stream_context_create(['http' => ['timeout' => 10]]);
-    $response = @file_get_contents($verifyUrl, false, $context);
+    $clientId = '162861936617-aato9lpla08g5edots6fegvbkq7d6rti.apps.googleusercontent.com';
     
-    if ($response === false) {
-        echo json_encode(['success' => false, 'mensaje' => 'Error al validar token con Google']);
-        exit(0);
-    }
-    
-    $payload = json_decode($response, true);
-    if (isset($payload['error'])) {
+    // Dividir el token en partes
+    $parts = explode('.', $googleToken);
+    if (count($parts) !== 3) {
         echo json_encode(['success' => false, 'mensaje' => 'Token de Google inválido']);
         exit(0);
     }
     
+    // Decodificar payload (parte central)
+    $payload = json_decode(base64_decode(strtr($parts[1], '-_', '+/')), true);
+    if (!$payload) {
+        echo json_encode(['success' => false, 'mensaje' => 'Token de Google inválido']);
+        exit(0);
+    }
+    
+    // Verificar audience coincides con nuestro client ID
+    if (!isset($payload['aud']) || $payload['aud'] !== $clientId) {
+        echo json_encode(['success' => false, 'mensaje' => 'Token de Google no autorizado para esta app']);
+        exit(0);
+    }
+    
     $email = $payload['email'] ?? '';
+    $foto = $payload['picture'] ?? '';
     
     // Buscar usuario por email
     foreach ($usuarios as $usuario) {
@@ -111,7 +119,8 @@ if (isset($datos['googleToken']) && $datos['googleToken'] !== '') {
                 'usuario' => [
                     'id' => $usuario['id'],
                     'email' => $usuario['email'],
-                    'nombre' => $usuario['nombre'] ?? ''
+                    'nombre' => $usuario['nombre'] ?? '',
+                    'foto' => $foto
                 ]
             ]);
             exit(0);
