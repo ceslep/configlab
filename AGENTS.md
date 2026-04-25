@@ -19,6 +19,7 @@ npm run deploy # Build + deploy to GitHub Pages via gh-pages
 
 - **Frontend**: Svelte 5 SPA calling PHP backend APIs
 - **API layer**: `src/lib/service.ts` calls PHP endpoints (login, procedimientos, firmas)
+- **Session management**: Frontend manages sessions via `localStorage` key `configlab_session`, auto-expires after 7 days. `checkAuth()` first checks local storage, then verifies with backend.
 - **Backend endpoints**: `login_configlab.php`, `getProcedimientos.php`, `guardarProcedimiento.php`, `eliminarProcedimiento.php`, `printphp/getFirmas.php`, `printphp/guardarFirmas.php`, `printphp/subirFirma.php`
 - **Constants**: `src/lib/constants.ts` defines `BASE_URL` and types
 

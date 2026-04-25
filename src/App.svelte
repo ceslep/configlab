@@ -6,7 +6,7 @@
   import ProcedimientosTable from './lib/components/ProcedimientosTable.svelte';
   import FirmasManager from './lib/components/FirmasManager.svelte';
   import Login from './lib/components/Login.svelte';
-  import { checkAuth, logout, type Usuario } from './lib/service';
+  import { checkAuth, logout, getStoredUser, type Usuario } from './lib/service';
 
   const POPOVER_KEY = 'main_popover_v1';
   const POPOVER_EXPIRE_DATE = new Date('2026-05-04');
@@ -65,21 +65,32 @@
     }
   }
 
-  onMount(async () => {
+onMount(async () => {
+    const stored = await getStoredUser();
+    if (stored) {
+      usuario = stored;
+      authenticated = true;
+      showFirmasHint = shouldShowFirmasHint();
+      checkingAuth = false;
+    } else {
+      checkingAuth = false;
+    }
+
     try {
       const res = await checkAuth();
       if (res.success && res.usuario) {
         usuario = res.usuario;
         authenticated = true;
         showFirmasHint = shouldShowFirmasHint();
+      } else if (!stored) {
+        authenticated = false;
       }
-    } catch (e) {
-      console.error('Error checking auth:', e);
-      authenticated = false;
-    } finally {
-      checkingAuth = false;
+    } catch {
+      if (!stored) {
+        authenticated = false;
+      }
     }
-});
+  });
 </script>
 
 {#if checkingAuth}

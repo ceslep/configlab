@@ -1,5 +1,50 @@
 import { BASE_URL, type Procedimiento, type Firma } from './constants';
 
+const SESSION_KEY = 'configlab_session';
+const SESSION_EXPIRY_DAYS = 7;
+
+export interface Usuario {
+  id: string;
+  nombre: string;
+  email: string;
+  foto?: string;
+}
+
+export interface SessionData {
+  usuario: Usuario;
+  timestamp: number;
+}
+
+function getSession(): SessionData | null {
+  try {
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const session: SessionData = JSON.parse(raw);
+    const expiryMs = SESSION_EXPIRY_DAYS * 24 * 60 * 60 * 1000;
+    if (Date.now() - session.timestamp > expiryMs) {
+      localStorage.removeItem(SESSION_KEY);
+      return null;
+    }
+    return session;
+  } catch {
+    localStorage.removeItem(SESSION_KEY);
+    return null;
+  }
+}
+
+function setSession(usuario: Usuario): void {
+  localStorage.setItem(SESSION_KEY, JSON.stringify({
+    usuario,
+    timestamp: Date.now(),
+  }));
+}
+
+function clearSession(): void {
+  localStorage.removeItem(SESSION_KEY);
+}
+
+export { clearSession };
+
 async function request<T>(endpoint: string, body?: unknown): Promise<T> {
   const opts: RequestInit = {
     method: body ? 'POST' : 'GET',
@@ -15,11 +60,9 @@ async function request<T>(endpoint: string, body?: unknown): Promise<T> {
   }
 }
 
-export interface Usuario {
-  id: string;
-  nombre: string;
-  email: string;
-  foto?: string;
+export async function getStoredUser(): Promise<Usuario | null> {
+  const session = getSession();
+  return session?.usuario ?? null;
 }
 
 export interface LoginResponse {
@@ -29,19 +72,48 @@ export interface LoginResponse {
 }
 
 export async function login(id: string): Promise<LoginResponse> {
-  return request('login_configlab.php', { id });
+  const res = await request<LoginResponse>('login_configlab.php', { id });
+  if (res.success && res.usuario) {
+    setSession(res.usuario);
+  }
+  return res;
 }
 
 export async function loginGoogle(googleToken: string): Promise<LoginResponse> {
-  return request('login_configlab.php', { googleToken });
+  const res = await request<LoginResponse>('login_configlab.php', { googleToken });
+  if (res.success && res.usuario) {
+    setSession(res.usuario);
+  }
+  return res;
 }
 
 export async function checkAuth(): Promise<LoginResponse> {
-  return request('login_configlab.php');
+  const session = getSession();
+  if (session?.usuario) {
+    return { success: true, usuario: session.usuario };
+  }
+  try {
+    const res = await request<LoginResponse>('login_configlab.php');
+    if (res.success && res.usuario) {
+      setSession(res.usuario);
+    }
+    return res;
+  } catch {
+    if (session) {
+      clearSession();
+    }
+    return { success: false, mensaje: 'Sesión expirada' };
+  }
 }
 
 export async function logout(): Promise<{ success: boolean }> {
-  return request('login_configlab.php?logout=1');
+  clearSession();
+  try {
+    await request('login_configlab.php?logout=1');
+  } catch {
+    // ignore backend errors on logout
+  }
+  return { success: true };
 }
 
 export function getProcedimientos(): Promise<Procedimiento[]> {
